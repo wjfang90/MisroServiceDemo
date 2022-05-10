@@ -1,0 +1,442 @@
+////*****************************单地址********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7000 //服务端口
+//        } 
+//      ],
+//      "UpstreamPathTemplate": "/geteway/{url}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ]
+//    }
+//  ]
+//}
+
+////*****************************单地址全匹配********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7001 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/{url}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ]
+//    }
+//  ]
+//}
+
+////*****************************多地址多实例********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7000 //服务端口
+//        } //可以多个，自行负载均衡
+//      ],
+//      "UpstreamPathTemplate": "/gateway7000/{url}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ]
+//    },
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7001 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/gateway7001/{url}", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ]
+//    },
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7002 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/gateway7002/{url}", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ]
+//    }
+//  ]
+//}
+
+////MVC的路由规则是近水楼台先得月--
+////*****************************路由冲突+带权匹配********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7000 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/{url}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "Priority": 0 //默认是0 加个1
+//    },
+//    {
+//      "DownstreamPathTemplate": "/api/user/userInfo?id={id}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7001 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/api/user/userInfo/{id}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "Priority": 1 //默认是0, 路由一样的 /api/user/userInfo/1，  识别为Priority2 的地址 localhost:7002
+//    },
+//    {
+//      "DownstreamPathTemplate": "/api/user/{url}?id={id}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7002 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/api/user/{url}/{id}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "Priority": 2 //默认是0 , 路由一样的 /api/user/userInfo/1，  识别为Priority2 的地址 localhost:7002
+//    }
+//  ]
+//}
+
+////*****************************单地址多实例负载均衡********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7000 //服务端口
+//        } //可以多个，自行负载均衡
+//        ,
+//        {
+//          "Host": "localhost",
+//          "Port": 7001 //服务端口
+//        },
+//        {
+//          "Host": "localhost",
+//          "Port": 7002 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/gateway/{url}", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "LoadBalancerOptions": {
+//        "Type": "RoundRobin" //轮询 //"LeastConnection" //最少连接数的服务器  "NoLoadBalance" //不负载均衡  //"CookieStickySessions" //会话粘滞  //
+//      }
+//      //,
+//      //"LoadBalancerOptions": {
+//      //  "Type": "CookieStickySessions",
+//      //  "Key": "ASP.NET_SessionId",
+//      //  "Expiry": 1800000
+//      //}
+//    }
+//  ]
+//}
+
+//*****************************单地址多实例负载均衡+Consul********************************
+
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "UpstreamPathTemplate": "/gateway/{url}", //网关地址--url变量
+//      //"UpstreamHost": "fang-gateway.com", //fang to do 配置地址不生效
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "UseServiceDiscovery": true,
+//      "ServiceName": "fang-micro-service", //consul服务名称
+//      "LoadBalancerOptions": {
+//        "Type": "RoundRobin" //轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
+//      }
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "http://localhost:7100", //网关对外地址
+//    "ServiceDiscoveryProvider": {
+//      "Scheme": "http",
+//      "Host": "localhost",
+//      "Port": 8500,
+//      "Type": "Consul" //由Consul提供服务发现, 每次请求去consul,请求相比PollConsul模式会慢一点
+//    }
+//    //"ServiceDiscoveryProvider": {
+//    //  "Host": "localhost",
+//    //  "Port": 8500,
+//    //  "Type": "PollConsul", //由Consul提供服务发现,
+//    //  "PollingInterval": 1000 //轮询consul,频率毫秒--micro service down掉是不知道的
+//    //  //"Token": "footoken"//需要ACL的话
+//    //}
+//  }
+//}
+
+
+//  //*****************************Consul+缓存cache********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "UpstreamPathTemplate": "/gateway/{url}", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "UseServiceDiscovery": true,
+//      "ServiceName": "fang-micro-service", //consul服务名称
+//      "LoadBalancerOptions": {
+//        "Type": "RoundRobin" //轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
+//      },
+//      "FileCacheOptions": {
+//        "TtlSeconds": 15,
+//        "Region": "UserCache" //可以调用Api清理
+//      }
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "http://localhost:7100", //网关对外地址
+//    "ServiceDiscoveryProvider": {
+//      "Host": "localhost",
+//      "Port": 8500,
+//      "Type": "Consul" //由Consul提供服务发现, 每次请求去consul
+//    }
+//    //"ServiceDiscoveryProvider": {
+//    //  "Host": "localhost",
+//    //  "Port": 8500,
+//    //  "Type": "PollConsul", //由Consul提供服务发现,
+//    //  "PollingInterval": 1000 //轮询consul,频率毫秒--down掉是不知道的
+//    //  //"Token": "footoken"//需要ACL的话
+//    //}
+//  }
+//}
+
+////*****************************超时+限流+熔断+降级+Consul+Polly********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "UpstreamPathTemplate": "/gateway/{url}", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "UseServiceDiscovery": true,
+//      "ServiceName": "fang-micro-service", //consul服务名称
+//      "LoadBalancerOptions": {
+//        "Type": "RoundRobin" //轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
+//      },
+//      "RateLimitOptions": {
+//        "ClientIdHeader": "ClientId",
+//        "ClientWhitelist": [ "fang", "zhangsan" ], //白名单 ClientId 区分大小写
+//        "EnableRateLimiting": true,
+//        "Period": "5m", //1s, 5m, 1h, 1d
+//        "PeriodTimespan": 30, //多少秒之后客户端可以重试
+//        "Limit": 5 //统计时间段内允许的最大请求数量
+//      }
+//      ,
+//      "QoSOptions": {
+//        "ExceptionsAllowedBeforeBreaking": 3, //允许多少个异常请求
+//        "DurationOfBreak": 10000, // 熔断的时间，单位为ms
+//        "TimeoutValue": 4000 //如果下游请求的处理时间超过多少秒，则自如将请求设置为超时 默认90秒
+//      }
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "http://localhost:7100", //网关对外地址
+//    "ServiceDiscoveryProvider": {
+//      "Host": "localhost",
+//      "Port": 8500,
+//      "Type": "Consul" //由Consul提供服务发现
+//    },
+//    "RateLimitOptions": {
+//      "ClientIdHeader": "ClientId",
+//      "QuotaExceededMessage": "Too many requests, maybe later?11", // 当请求过载被截断时返回的消息
+//      "HttpStatusCode": 666 // 当请求过载被截断时返回的http status
+//    }
+//  }
+//}
+
+
+////*****************************单地址多实例负载均衡+Consul+Polly********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "UpstreamPathTemplate": "/gateway/{url}", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "UseServiceDiscovery": true,
+//      "ServiceName": "fang-micro-service", //consul服务名称
+//      "LoadBalancerOptions": {
+//        "Type": "RoundRobin" //轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
+//      },
+//      "FileCacheOptions": {
+//        "TtlSeconds": 10,
+//        "Region": "UserCache"
+//      } //"默认字典缓存"
+//      //"RateLimitOptions": {
+//      //  "ClientIdHeader": "ClientId",
+//      //  "ClientWhitelist": [], //白名单
+//      //  "EnableRateLimiting": true,
+//      //  "Period": "5m", //1s, 5m, 1h, 1d
+//      //  "PeriodTimespan": 5, //多少秒之后客户端可以重试
+//      //  "Limit": 5 //统计时间段内允许的最大请求数量
+//      //}
+//      //"QoSOptions": {
+//      //  "ExceptionsAllowedBeforeBreaking": 3, //允许多少个异常请求
+//      //  "DurationOfBreak": 10000, // 熔断的时间，单位为ms
+//      //  "TimeoutValue": 10000 //如果下游请求的处理时间超过多少则自如将请求设置为超时 默认90秒
+//      //}
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "http://localhost:7100", //网关对外地址
+//    "ServiceDiscoveryProvider": {
+//      "Host": "localhost",
+//      "Port": 8500,
+//      "Type": "Consul" //由Consul提供服务发现
+//    }
+//    //"RateLimitOptions": {
+//    //  "ClientIdHeader": "ClientId",
+//    //  "QuotaExceededMessage": "Too many requests, maybe later?11", // 当请求过载被截断时返回的消息
+//    //  "HttpStatusCode": 666 // 当请求过载被截断时返回的http status
+//    //}
+//  }
+//}
+
+
+////*****************************请求聚合aggregator********************************
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/user/users", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7000 //服务端口
+//        } //可以多个，自行负载均衡
+//      ],
+//      "UpstreamPathTemplate": "/gateway7000/user/users", //网关地址--url变量   //冲突的还可以加权重Priority
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "key": "key7000"
+//    },
+//    {
+//      "DownstreamPathTemplate": "/api/user/users", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7001 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/gateway7001/user/users", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "key": "key7001"
+//    },
+//    {
+//      "DownstreamPathTemplate": "/api/user/users", //服务地址--url变量
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 7002 //服务端口
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/gateway7002/user/users", //网关地址--url变量
+//      "UpstreamHttpMethod": [ "Get", "Post" ],
+//      "key": "key7002"
+//    }
+//  ],
+//  "Aggregates": [
+//    {
+//      "RouteKeys": [
+//        "key7000",
+//        "key7001",
+//        "key7002"
+//      ],
+//      "UpstreamPathTemplate": "/UserAggregator",
+//      //"Aggregator": "UserAggregator"//自定义聚合器
+//    }
+//  ]
+//}
+
+
+
+  ////*****************************单地址多实例负载均衡+Consul+Polly+自定义缓存+ IdentityServer4********************************
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{url}", //服务地址--url变量
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/gateway/{url}", //网关地址--url变量
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UseServiceDiscovery": true,
+      "ServiceName": "fang-micro-service", //consul服务名称
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin" //轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
+      },
+      //"默认字典缓存"
+      "FileCacheOptions": {
+        "TtlSeconds": 10,
+        "Region": "UserCache"
+      },
+      //"RateLimitOptions": {
+      //  "ClientIdHeader": "ClientId",
+      //  "ClientWhitelist": [], //白名单
+      //  "EnableRateLimiting": true,
+      //  "Period": "5m", //1s, 5m, 1h, 1d
+      //  "PeriodTimespan": 5, //多少秒之后客户端可以重试
+      //  "Limit": 5 //统计时间段内允许的最大请求数量
+      //}      
+      //"QoSOptions": {
+      //  "ExceptionsAllowedBeforeBreaking": 3, //允许多少个异常请求
+      //  "DurationOfBreak": 10000, // 熔断的时间，单位为ms
+      //  "TimeoutValue": 10000 //如果下游请求的处理时间超过多少则自如将请求设置为超时 默认90秒
+      //}
+
+      //配置IdentityServer4
+      "AuthenticationOptions": {
+        "Provider": null,
+        "ProviderRootUrl": null,
+        "AuthenticationProviderKey": "UserGatewayKey",
+        //"AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": [ "fangtest" ],
+        "RequireHttps": false,
+        "ApiName": null,
+        "ApiSecret": "fang_autheration_pwd"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:7100", //网关对外地址
+    "ServiceDiscoveryProvider": {
+      "Host": "localhost",
+      "Port": 8500,
+      "Type": "Consul" //由Consul提供服务发现
+    }
+    //"RateLimitOptions": {
+    //  "ClientIdHeader": "ClientId",
+    //  "QuotaExceededMessage": "Too many requests, maybe later?11", // 当请求过载被截断时返回的消息
+    //  "HttpStatusCode": 666 // 当请求过载被截断时返回的http status
+    //}
+  }
+}

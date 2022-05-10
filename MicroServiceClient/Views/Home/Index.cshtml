@@ -1,0 +1,18 @@
+﻿@model UserViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+
+    <ul>
+        @foreach (var item in Model.UserList)
+        {
+            <p>@item.Id , @item.Name , @item.Age , @item.CreateTime</p>
+
+        }
+    </ul>
+    <p>@Model.IP</p>
+    <p>@Model.Port</p>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
