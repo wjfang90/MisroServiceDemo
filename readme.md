@@ -30,13 +30,13 @@ http请求 => Authentication(IdentityServer4) => ApiGateway (Ocelot服务治理)
      
      4.在Configure 中 app.UseOcelot
      
-     5. 添加configuration.json 配置文件配置到项目中
+     5. 添加 ocelot.json 配置文件配置到项目中
 
   #### 配置缓存 
     
     1.Install-Package Ocelot.Cache.CacheManager
     
-    2.services..AddCacheManager(x =>
+    2.services.AddCacheManager(x =>
 		{
 		    x.WithDictionaryHandle();
 		})
