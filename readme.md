@@ -1,15 +1,15 @@
 MicroService 
 ===
 
---http请求 => Authentication(IdentityServer4) => ApiGateway (Ocelot服务治理) =>   MicroService (Consul实现服务注册和服务发现)
+http请求 => Authentication(IdentityServer4) => ApiGateway (Ocelot服务治理) =>   MicroService (Consul实现服务注册和服务发现)
 
 ## Consul
 
---优点 ：提供服务注册、服务发现、服务健康检查功能，服务异常自动下线，注册的服务自动上线功能
+优点 ：提供服务注册、服务发现、服务健康检查功能，服务异常自动下线，注册的服务自动上线功能
 
---缺点 ：需要手动配置负载均衡策略 
+缺点 ：需要手动配置负载均衡策略 
 
- --Consul使用方式
+ #### Consul使用方式
  
  1.微服务上注册Consul服务
  
@@ -32,7 +32,7 @@ MicroService
      
      5. 添加configuration.json 配置文件配置到项目中
 
-    --配置缓存 
+  #### 配置缓存 
     
     1.Install-Package Ocelot.Cache.CacheManager
     
@@ -42,15 +42,15 @@ MicroService
 		})
     
     3. ocelot.json 添加配置项 "FileCacheOptions": { "TtlSeconds": 15, "Region": "somename" }
-    
-    --配置自定义缓存
+   
+   #### 配置自定义缓存
     
     1.定义实现 IOcelotCache<CachedResponse>接口的实现类
     
     2.services.AddSingleton<IOcelotCache<CachedResponse>, OcelotCustomCache>()
 
 
-    --todo 配置IdentityServer4
+   #### todo 配置IdentityServer4
 
 
 
@@ -58,15 +58,15 @@ MicroService
 
 ## IdentityServer4
 
- --Identity Server4 认证服务配置
+ #### Identity Server4 认证服务配置
      
      1. 安装 IdentityServer4 包
      
      2. 配置验证方式
 	services.AddIdentityServer()
-	.AddDeveloperSigningCredential()//默认使用开发证书
-	.AddInMemoryClients(AuthenticationInit.GetClients())
-	.AddInMemoryApiResources(AuthenticationInit.GetApiResources());
+		.AddDeveloperSigningCredential()//默认使用开发证书
+		.AddInMemoryClients(AuthenticationInit.GetClients())
+		.AddInMemoryApiResources(AuthenticationInit.GetApiResources());
 
      3. 配置中间件
 	 
@@ -74,11 +74,11 @@ MicroService
 
      4. 查看配置文档 http://localhost:7200/.well-known/openid-configuration
 
---Client 认证
+#### Client 认证
 	
 	IdentityModel 提供了集成认证
 
---API 认证	
+#### API 认证	
      
      在服务实例上调用认证服务的服务配置
 	
@@ -105,11 +105,11 @@ MicroService
                 
 ## 在postman 中使用使用token调用API方法
 
-   --headers 方式
+   #### headers 方式
 	
 	Authorization:Bearer token_value
 
-   --Authorization方式
+   #### Authorization方式
 	
 	Type:BearerToken
 	
